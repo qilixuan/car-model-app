@@ -55,7 +55,7 @@ async def list_products(
             "price": p.price, "originalPrice": p.original_price,
             "description": p.description, "images": p.images,
             "likes": p.likes, "views": p.views, "postedAt": p.posted_at.isoformat() if p.posted_at else "",
-            "seller": {"id": p.seller.id, "name": p.seller.name, "rating": p.seller.rating} if p.seller else None
+            "seller": {"id": p.seller.id, "name": p.seller.username, "rating": p.seller.rating} if p.seller else None
         }
         for p in products
     ]
@@ -74,7 +74,7 @@ async def get_product(product_id: int, db: AsyncSession = Depends(get_db)):
         "price": p.price, "originalPrice": p.original_price,
         "description": p.description, "images": p.images,
         "likes": p.likes, "views": p.views, "postedAt": p.posted_at.isoformat() if p.posted_at else "",
-        "seller": {"id": p.seller.id, "name": p.seller.name, "rating": p.seller.rating} if p.seller else None
+        "seller": {"id": p.seller.id, "name": p.seller.username, "rating": p.seller.rating} if p.seller else None
     }
 
 @router.post("")
