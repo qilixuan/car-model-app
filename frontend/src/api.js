@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:8000"
+const BASE_URL = "https://car-model-app.onrender.com"
 
 async function request(path, options = {}) {
   const token = localStorage.getItem("token")
