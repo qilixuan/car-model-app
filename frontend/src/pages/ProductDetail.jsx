@@ -1,9 +1,10 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Heart, Share2, MessageCircle, ChevronLeft, Star } from "lucide-react"
 import { useNavigate, useParams } from "react-router-dom"
 import { motion } from "framer-motion"
-import { mockProducts } from "../data/mockData"
 import useStore from "../store/useStore"
+
+const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:8000'
 
 export default function ProductDetail({ user }) {
   const navigate = useNavigate()
@@ -11,8 +12,17 @@ export default function ProductDetail({ user }) {
   const { likedProducts, toggleLike } = useStore()
   const [currentImage, setCurrentImage] = useState(0)
   const [activeTab, setActiveTab] = useState("detail")
+  const [product, setProduct] = useState(null)
+  const [loading, setLoading] = useState(true)
 
-  const product = mockProducts.find(p => p.id === Number(id))
+  useEffect(() => {
+    fetch(`${API_BASE}/api/products/${id}`)
+      .then(r => r.json())
+      .then(data => { setProduct(data); setLoading(false) })
+      .catch(() => setLoading(false))
+  }, [id])
+
+  if (loading) return <div className="p-4 text-center text-text-secondary">加载中...</div>
   if (!product) return <div className="p-4 text-center text-text-secondary">商品不存在</div>
 
   const isLiked = likedProducts.includes(product.id)
@@ -49,12 +59,12 @@ export default function ProductDetail({ user }) {
       <div className="px-4">
         <div className="relative aspect-square rounded-2xl overflow-hidden bg-gray-100">
           <img
-            src={product.images[currentImage]}
+            src={(product.images && product.images[currentImage]) || 'https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=400&h=400&fit=crop'}
             alt={product.name}
             className="w-full h-full object-cover"
           />
           <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
-            {product.images.map((_, i) => (
+            {(product.images || []).map((_, i) => (
               <button
                 key={i}
                 onClick={() => setCurrentImage(i)}
@@ -79,8 +89,8 @@ export default function ProductDetail({ user }) {
             </div>
             <div className="flex items-center gap-1 text-text-secondary text-sm">
               <Star size={14} className="text-accent fill-accent" />
-              <span className="font-medium">{product.seller.rating}</span>
-              <span className="text-xs">({product.seller.name})</span>
+              <span className="font-medium">{product.seller?.rating || '5.0'}</span>
+              <span className="text-xs">({product.seller?.Name || product.seller?.name || '藏家'})</span>
             </div>
           </div>
 
@@ -140,10 +150,10 @@ export default function ProductDetail({ user }) {
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-2xl">🚗</div>
               <div>
-                <p className="font-medium text-secondary">{product.seller.name}</p>
+                <p className="font-medium text-secondary">{product.seller?.Name || product.seller?.name || '藏家'}</p>
                 <div className="flex items-center gap-1 mt-0.5">
                   <Star size={12} className="text-accent fill-accent" />
-                  <span className="text-sm text-text-secondary">信用 {product.seller.rating}</span>
+                  <span className="text-sm text-text-secondary">信用 {product.seller?.rating || '5.0'}</span>
                 </div>
               </div>
             </div>

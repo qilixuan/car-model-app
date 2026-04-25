@@ -1,9 +1,9 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Search, Bell } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import ProductCard from '../components/ProductCard'
-import { mockProducts } from '../data/mockData'
+import useStore from '../store/useStore'
 
 const banners = [
   { id: 1, title: "新年特惠", subtitle: "精选车模8折起", color: "from-primary/90 to-primary-dark/90" },
@@ -15,8 +15,13 @@ export default function Home() {
   const navigate = useNavigate()
   const [searchValue, setSearchValue] = useState("")
   const [bannerIndex, setBannerIndex] = useState(0)
+  const { products, fetchProducts } = useStore()
 
-  const latestProducts = mockProducts.slice(0, 6)
+  useEffect(() => {
+    fetchProducts({ sort: "latest" })
+  }, [])
+
+  const latestProducts = products.slice(0, 6)
 
   return (
     <div className="min-h-screen bg-background">

@@ -19,13 +19,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-from .routers import auth, products, collections, chat, market, wechat
+from .routers import auth, products, collections, chat, market, wechat, ai_chat
 app.include_router(auth.router)
 app.include_router(products.router)
 app.include_router(collections.router)
 app.include_router(chat.router)
 app.include_router(market.router)
 app.include_router(wechat.router)
+app.include_router(ai_chat.router)
 
 @app.get("/api/health")
 async def health():

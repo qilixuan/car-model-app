@@ -1,28 +1,11 @@
 import { useState, useRef, useEffect } from 'react'
 import { X, Send, Sparkles, User } from 'lucide-react'
 
-const aiReplies = {
-  greeting: "宝～我是星仔呀！车模星球的小助手，有任何关于车模的问题尽管问我哒！",
-  search: "好的宝～我帮你找找这款车模的信息！稍等一下哦～",
-  collection: "收到！让我来帮你整理一下收藏～",
-  price: "关于价格嘛，我帮你查一下近期市场价哦！",
-  unknown: "宝～这个问题我正在学习中，让我结合你的情况给你一个合适的建议呀～"
-}
-
-function getReply(message) {
-  const m = message.toLowerCase()
-  if (m.includes('查') || m.includes('找') || m.includes('看')) return aiReplies.search
-  if (m.includes('收藏') || m.includes('整理') || m.includes('添加')) return aiReplies.collection
-  if (m.includes('价') || m.includes('钱') || m.includes('值')) return aiReplies.price
-  if (m.includes('你好') || m.includes('嗨') || m.includes('在')) return aiReplies.greeting
-  return aiReplies.unknown
-}
-
 export default function AIChatPanel({ open, onClose }) {
   if (!open) return null
 
   const [messages, setMessages] = useState([
-    { role: 'assistant', content: aiReplies.greeting }
+    { role: 'assistant', content: "宝～我是星仔呀！车模星球的小助手，有任何关于车模的问题尽管问我哒！" }
   ])
   const [input, setInput] = useState('')
   const [isTyping, setIsTyping] = useState(false)
@@ -38,9 +21,15 @@ export default function AIChatPanel({ open, onClose }) {
     setMessages(prev => [...prev, userMsg])
     setInput('')
     setIsTyping(true)
-    await new Promise(r => setTimeout(r, 800 + Math.random() * 600))
-    const reply = { role: 'assistant', content: getReply(input) }
-    setMessages(prev => [...prev, reply])
+    
+    try {
+      const res = await fetch(`/api/chat/ai?q=${encodeURIComponent(input.trim())}`)
+      const data = await res.json()
+      const reply = { role: 'assistant', content: data.reply || "宝～网络有点问题，稍等一下哦"}
+      setMessages(prev => [...prev, reply])
+    } catch {
+      setMessages(prev => [...prev, { role: 'assistant', content: "宝～网络有点问题，稍等一下哦" }])
+    }
     setIsTyping(false)
   }
 

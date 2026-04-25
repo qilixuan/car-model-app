@@ -55,7 +55,15 @@ async def list_products(
             "price": p.price, "originalPrice": p.original_price,
             "description": p.description, "images": p.images,
             "likes": p.likes, "views": p.views, "postedAt": p.posted_at.isoformat() if p.posted_at else "",
-            "seller": {"id": p.seller.id, "name": p.seller.username, "rating": p.seller.rating} if p.seller else None
+            "seller": {"id": p.seller.id, "Name": p.seller.username, "rating": p.seller.rating} if p.seller else None,
+            # 星仔扩展字段
+            "rarity": getattr(p, 'rarity', None),
+            "priceTrend": getattr(p, 'price_trend', None),
+            "marketPriceLow": getattr(p, 'market_price_low', None),
+            "marketPriceHigh": getattr(p, 'market_price_high', None),
+            "collectorValue": getattr(p, 'collector_value', None),
+            "modelCode": getattr(p, 'model_code', None),
+            "isLimited": getattr(p, 'is_limited', 0),
         }
         for p in products
     ]
@@ -74,7 +82,15 @@ async def get_product(product_id: int, db: AsyncSession = Depends(get_db)):
         "price": p.price, "originalPrice": p.original_price,
         "description": p.description, "images": p.images,
         "likes": p.likes, "views": p.views, "postedAt": p.posted_at.isoformat() if p.posted_at else "",
-        "seller": {"id": p.seller.id, "name": p.seller.username, "rating": p.seller.rating} if p.seller else None
+        "seller": {"id": p.seller.id, "name": p.seller.username, "rating": p.seller.rating} if p.seller else None,
+        # 星仔扩展字段
+        "rarity": getattr(p, 'rarity', None),
+        "priceTrend": getattr(p, 'price_trend', None),
+        "marketPriceLow": getattr(p, 'market_price_low', None),
+        "marketPriceHigh": getattr(p, 'market_price_high', None),
+        "collectorValue": getattr(p, 'collector_value', None),
+        "modelCode": getattr(p, 'model_code', None),
+        "isLimited": getattr(p, 'is_limited', 0),
     }
 
 @router.post("")

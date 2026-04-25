@@ -1,17 +1,21 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Filter, SlidersHorizontal } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import ProductCard from '../components/ProductCard'
-import { mockProducts, brands, scales, conditions, materials } from '../data/mockData'
 import useStore from '../store/useStore'
 
 export default function Market() {
-  const { filterProducts } = useStore()
+  const { filterProducts, fetchProducts, productsLoading } = useStore()
   const [showFilter, setShowFilter] = useState(false)
   const [filters, setFilters] = useState({ brand: "全部", scale: "全部", condition: "全部", material: "全部" })
   const [sortBy, setSortBy] = useState("latest")
 
-  const filtered = filterProducts(filters)
+  // 加载商品数据
+  useEffect(() => {
+    fetchProducts({ sort: sortBy, ...filters })
+  }, [])
+
+  const filtered = filterProducts({ ...filters, sort: sortBy })
 
   const sorted = [...filtered].sort((a, b) => {
     if (sortBy === "price-low") return a.price - b.price
@@ -40,7 +44,7 @@ export default function Market() {
           {["最新", "价格低", "价格高", "最热"].map((tab, i) => (
             <button
               key={tab}
-              onClick={() => setSortBy(["latest", "price-low", "price-high", "popular"][i])}
+              onClick={() => { setSortBy(["latest", "price-low", "price-high", "popular"][i]); fetchProducts({ ...filters, sort: ["latest", "price-low", "price-high", "popular"][i] }) }}
               className={`flex-shrink-0 px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
                 sortBy === ["latest", "price-low", "price-high", "popular"][i]
                   ? 'bg-primary text-white'
